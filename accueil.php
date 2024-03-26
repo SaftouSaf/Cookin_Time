@@ -1,5 +1,7 @@
 <?php
 session_start();
+require_once(__DIR__ . '/config/mysql.php');
+require_once(__DIR__ . '/config/databaseconnect.php');
 require_once(__DIR__ . '/include/variables.php');
 require_once(__DIR__ . '/include/functions.php');
 ?>
@@ -14,15 +16,16 @@ require_once(__DIR__ . '/include/functions.php');
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 bg-dark text-light">
     <div class="container">
         <!-- Inclusion de l'en tête-->
         <?php require_once(__DIR__ . '/include/header.php'); ?>
 
         <!-- Si l'utilisateur/trice s'est bien connecté(e), on affiche un message de succès -->
-        <?php if (isset($_SESSION['LOGGED_USER'])) : ?>
+        <?php if (isset($_SESSION['LOGIN_SUCCESS'])) : ?>
             <div class="alert alert-success mt-3" role="alert">
-                Bonjour <?php echo $_SESSION['LOGGED_USER']['email']; ?> et bienvenu sur le site !
+                <?php echo $_SESSION['LOGIN_SUCCESS'];
+                unset($_SESSION['LOGIN_SUCCESS']); ?>
             </div>
         <?php endif; ?>
 
@@ -36,11 +39,11 @@ require_once(__DIR__ . '/include/functions.php');
 
         <!-- Boucle sur les recettes -->
         <h1 class="mt-3 mb-3">Liste des Recettes !</h1>
-        <?php foreach (getRecipes($recipes) as $recipe) : ?>
+        <?php foreach ($recipes as $recipe) : ?>
             <article>
                 <h3><?php echo $recipe['title']; ?></h3>
                 <div><?php echo $recipe['recipe']; ?></div>
-                <i><?php echo displayAuthor($recipe['author'], $users); ?></i>
+                <i><?php echo displayAuthor($recipe['author'], $utilisateurs); ?></i>
             </article><br>
         <?php endforeach; ?>
     </div>

@@ -1,5 +1,7 @@
 <?php
 session_start();
+require_once(__DIR__ . '/config/mysql.php');
+require_once(__DIR__ . '/config/databaseconnect.php');
 require_once(__DIR__ . '/include/functions.php');
 require_once(__DIR__ . '/include/variables.php');
 
@@ -11,18 +13,16 @@ require_once(__DIR__ . '/include/variables.php');
 $postData = $_POST;
 
 // Validation du formulaire
-if (isset($postData['email']) && isset($postData['mdp'])) {
+if (isset($postData['email']) && isset($postData['password'])) {
     if (!filter_var($postData['email'], FILTER_VALIDATE_EMAIL)) {
         $_SESSION['LOGIN_ERROR_MESSAGE'] = 'Il faut un email valide pour vous connecter';
     } else {
-        foreach ($users as $user) {
-            if (
-                $user['email'] === $postData['email'] &&
-                $user['mdp'] === $postData['mdp']
-            ) {
+        
+        foreach ($utilisateurs as $users) {
+            if ($users['email'] === $postData['email'] && password_verify($postData['password'], $users['mdp'])) {
                 $_SESSION['LOGGED_USER'] = [
-                    'email' => $user['email'],
-                    'user_id' => $user['user_id'],
+                    'pseudo' => $users['pseudo'],
+                    'user_id' => $users['user_id'],
                 ];
             }
         }
@@ -31,11 +31,13 @@ if (isset($postData['email']) && isset($postData['mdp'])) {
             $_SESSION['LOGIN_ERROR_MESSAGE'] = sprintf(
                 'Les informations envoyées ne permettent pas de vous identifier : (%s/%s)',
                 $postData['email'],
-                strip_tags($postData['mdp'])
+                strip_tags($postData['password'])
             );
-        } 
-        redirectToUrl('accueil.php');
+        } else {
+            $_SESSION['LOGIN_SUCCESS'] = "Bonjour ". $_SESSION['LOGGED_USER']['pseudo'] . " et bienvenu sur le site !";
+        }
+        redirectToUrl("/Cookin'_Time/accueil.php");
     }
-    redirectToUrl('index.php');
+    redirectToUrl("/Cookin'_Time/index.php");
 } 
 ?>
