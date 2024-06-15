@@ -1,6 +1,6 @@
-<?php
+<?php session_start();
 require_once(__DIR__ . '/include/functions.php'); 
-session_start();
+session_unset();
 session_destroy(); 
-redirectToUrl("/Cookin'_Time/index.php");
+header("location: index.php");
 ?>
